@@ -7,18 +7,17 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.io.Serializable;
 import java.util.Date;
 
 @Getter
 @Setter
-@Data
-@AllArgsConstructor
+//@AllArgsConstructor
 @NoArgsConstructor
 @Document( collection = "twitter")
-public class Twitter implements Serializable {
+public class Twitter {
 
     @Id
+    @Generated
     private String id;
 
     @NotBlank
@@ -26,6 +25,20 @@ public class Twitter implements Serializable {
     private String text;
 
     @NotNull
-    private Date dataCriacao = new Date();
+    private Date dataCriacao;
 
+    public Twitter(@NotBlank @Size(max = 140) String text) {
+        this.text = text;
+    }
+
+    public Twitter(String id, @NotBlank @Size(max = 140) String text) {
+        this.id = id;
+        this.text = text;
+    }
+
+    public Twitter(String id, @NotBlank @Size(max = 140) String text, @NotNull Date dataCriacao) {
+        this.id = id;
+        this.text = text;
+        this.dataCriacao = dataCriacao;
+    }
 }

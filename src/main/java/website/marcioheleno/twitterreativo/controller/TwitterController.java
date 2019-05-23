@@ -17,13 +17,11 @@ import javax.validation.Valid;
 @RestController
 public class TwitterController {
 
-
     @Autowired
     private TwitterRepository twitterRepository;
 
     @GetMapping("/tweets")
     public Flux<Twitter> findAll() {
-        log.debug("findAll Blog");
         return twitterRepository.findAll();
     }
 
@@ -39,14 +37,29 @@ public class TwitterController {
             .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-
     @PutMapping("/tweets/{id}")
-    public Mono<ResponseEntity<Void>> deleteTwitter(@PathVariable(value = "id") String twetterId) {
+    public Mono<ResponseEntity<Twitter>> updateTweet(
+        @PathVariable(value = "id") String twetterId,
+        @Valid @RequestBody Twitter twitter ) {
+
+        return twitterRepository.findById(twetterId)
+            .flatMap(existeTwitter -> {
+                existeTwitter.setText(twitter.getText());
+                return twitterRepository.save(existeTwitter);
+            })
+            .map(updateTweet -> new ResponseEntity<>(updateTweet, HttpStatus.OK))
+            .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @DeleteMapping("/tweets/{id}")
+    public Mono<ResponseEntity<Void>> deleteTweet(@PathVariable(value = "id") String twetterId) {
+
         return twitterRepository.findById(twetterId)
             .flatMap(existeTwitter ->
                 twitterRepository.delete(existeTwitter)
-                .then(Mono.just(new ResponseEntity<>(HttpStatus.NOT_FOUND)))
-            );
+                    .then(Mono.just(new ResponseEntity<Void>(HttpStatus.OK)))
+            )
+            .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping(value = "/stream/tweets", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
