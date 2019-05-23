@@ -1,0 +1,10 @@
+spring:
+  data:
+    mongodb:
+      database: twitters
+      host: localhost
+      port: 27017
+
+  devtools:
+    livereload:
+      enabled: true
