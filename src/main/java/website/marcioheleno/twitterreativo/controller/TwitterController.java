@@ -22,6 +22,7 @@ public class TwitterController {
 
     @GetMapping("/tweets")
     public Flux<Twitter> findAll() {
+
         return twitterRepository.findAll();
     }
 
