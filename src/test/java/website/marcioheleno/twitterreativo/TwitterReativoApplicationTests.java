@@ -25,10 +25,17 @@ public class TwitterReativoApplicationTests {
     @Autowired
     TwitterRepository twitterRepository;
 
+    Twitter twitter = new Twitter(
+        "1",
+        "Primeiro Twitter.",
+        "Este e meu primeiro twitter",
+        new Date(),
+        "Márcio",
+        true
+    );
+
     @Test
     public void testCriandoTwitter() {
-
-        Twitter twitter = new Twitter("1", "Primeiro Twitter.", new Date());
 
         webTestClient.post().uri("/tweets")
             .contentType(MediaType.APPLICATION_JSON_UTF8)
@@ -39,7 +46,7 @@ public class TwitterReativoApplicationTests {
             .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
             .expectBody()
             .jsonPath("$.id").isNotEmpty()
-            .jsonPath("$.text").isEqualTo("Primeiro Twitter.");
+            .jsonPath("$.titulo").isEqualTo("Primeiro Twitter.");
     }
 
     @Test
@@ -55,8 +62,8 @@ public class TwitterReativoApplicationTests {
     @Test
     public void testPegandoUmTwitter() {
 
-        Twitter twitter = twitterRepository
-            .save(new Twitter("Primeiro Twitter."))
+        twitterRepository
+            .save(twitter)
             .block();
 
         webTestClient.get()
@@ -70,11 +77,14 @@ public class TwitterReativoApplicationTests {
 
     @Test
     public void testAtualizandoTweet() {
-        Twitter twitter = twitterRepository
-            .save(new Twitter("1", "Primeiro Twitter.", new Date()))
+        twitterRepository
+            .save(twitter)
             .block();
 
-        Twitter newTweetData = new Twitter("1", "Twitter Atualizado", new Date());
+        Twitter newTweetData = new Twitter(
+            "1", "Twitter Atualizado", "Conteúdo do Twitter Atualizado",
+            new Date(), "Usuário Atualizado", true
+        );
 
         webTestClient.put()
             .uri("/tweets/{id}", Collections.singletonMap("id", twitter.getId()))
@@ -85,12 +95,12 @@ public class TwitterReativoApplicationTests {
             .expectStatus().isOk()
             .expectHeader().contentType(MediaType.APPLICATION_JSON_UTF8)
             .expectBody()
-            .jsonPath("$.text").isEqualTo("Twitter Atualizado");
+            .jsonPath("$.titulo").isEqualTo("Twitter Atualizado");
     }
 
     @Test
     public void testDeleteTweet() {
-        Twitter twitter = twitterRepository.save(new Twitter("Primeiro Twitter.")).block();
+        twitterRepository.save(twitter).block();
 
         webTestClient.delete()
             .uri("/tweets/{id}", Collections.singletonMap("id",  twitter.getId()))

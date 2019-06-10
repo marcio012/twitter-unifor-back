@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Getter
 @Setter
-//@AllArgsConstructor
+@AllArgsConstructor
 @NoArgsConstructor
 @Document( collection = "twitter")
 public class Twitter {
@@ -22,23 +22,19 @@ public class Twitter {
 
     @NotBlank
     @Size(max = 140)
-    private String text;
+    private String titulo;
+
+    @NonNull
+    private String texto;
 
     @NotNull
     private Date dataCriacao;
 
-    public Twitter(@NotBlank @Size(max = 140) String text) {
-        this.text = text;
-    }
+    @NonNull
+    private String usuario;
 
-    public Twitter(String id, @NotBlank @Size(max = 140) String text) {
-        this.id = id;
-        this.text = text;
-    }
+    @NonNull
+    private Boolean status;
 
-    public Twitter(String id, @NotBlank @Size(max = 140) String text, @NotNull Date dataCriacao) {
-        this.id = id;
-        this.text = text;
-        this.dataCriacao = dataCriacao;
-    }
+
 }

@@ -13,46 +13,48 @@ import website.marcioheleno.twitterreativo.repository.TwitterRepository;
 
 import javax.validation.Valid;
 
+@CrossOrigin
 @Slf4j
 @RestController
+@RequestMapping("/tweets")
 public class TwitterController {
 
     @Autowired
     private TwitterRepository twitterRepository;
 
-    @GetMapping("/tweets")
+    @GetMapping()
     public Flux<Twitter> findAll() {
 
         return twitterRepository.findAll();
     }
 
-    @PostMapping("/tweets")
+    @PostMapping()
     public Mono<Twitter> createTwitter(@Valid @RequestBody Twitter twitter) {
         return twitterRepository.save(twitter);
     }
 
-    @GetMapping("/tweets/{id}")
+    @GetMapping("/{id}")
     public Mono<ResponseEntity<Twitter>> getTwetterById(@PathVariable(value = "id") String twetterId) {
         return twitterRepository.findById(twetterId)
             .map(savedTwitter -> ResponseEntity.ok(savedTwitter))
             .defaultIfEmpty(ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/tweets/{id}")
+    @PutMapping("/{id}")
     public Mono<ResponseEntity<Twitter>> updateTweet(
         @PathVariable(value = "id") String twetterId,
         @Valid @RequestBody Twitter twitter ) {
 
         return twitterRepository.findById(twetterId)
             .flatMap(existeTwitter -> {
-                existeTwitter.setText(twitter.getText());
+                existeTwitter.setTitulo(twitter.getTitulo());
                 return twitterRepository.save(existeTwitter);
             })
             .map(updateTweet -> new ResponseEntity<>(updateTweet, HttpStatus.OK))
             .defaultIfEmpty(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @DeleteMapping("/tweets/{id}")
+    @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> deleteTweet(@PathVariable(value = "id") String twetterId) {
 
         return twitterRepository.findById(twetterId)
